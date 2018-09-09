@@ -1,0 +1,12 @@
+patch-package
+--- a/node_modules/@types/chrome/index.d.ts
++++ b/node_modules/@types/chrome/index.d.ts
+@@ -3492,7 +3492,7 @@ declare namespace chrome.identity {
+      * If you specify the callback parameter, it should be a function that looks like this:
+      * function(string token) {...};
+      */
+-    export function getAuthToken(details: TokenDetails, callback?: (token: string) => void): void;
++    export function getAuthToken(details: TokenDetails, callback?: (token: string | undefined) => void): void;
+     /**
+      * Retrieves email address and obfuscated gaia id of the user signed into a profile.
+      * This API is different from identity.getAccounts in two ways. The information returned is available offline, and it only applies to the primary account for the profile.
