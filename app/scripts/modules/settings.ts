@@ -1,4 +1,4 @@
-import { observable } from "mobx"
+import { observable, autorun } from "mobx"
 import { receiveMessages, sendMessage } from "../protocol"
 import { inBackgroundPage } from "../utils/inBackgroundPage"
 
@@ -37,4 +37,14 @@ receiveMessages({
   SetUse24hrClock({ use24hrClock }) {
     state.use24hrClock = use24hrClock
   },
+})
+
+inBackgroundPage(() => {
+  const savedState = localStorage.getItem("settings")
+  if (savedState) {
+    Object.assign(state, JSON.parse(savedState))
+  }
+  autorun(() => {
+    localStorage.setItem("settings", JSON.stringify(state))
+  })
 })
