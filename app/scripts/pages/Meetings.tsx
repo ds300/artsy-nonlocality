@@ -153,9 +153,9 @@ const EventItem = observer(({ event }: { event: CalendarEvent }) => {
   const end = parseTime(event.end!)
   const isHappeningNow = start < timeState.now && end > timeState.now
   const zoomLink = getZoomLink(event)
-  const dateFormat = settingsState.use24hrClock
+  const dateFormat: Intl.DateTimeFormatOptions = settingsState.use24hrClock
     ? DateTime.TIME_24_SIMPLE
-    : DateTime.TIME_SIMPLE
+    : { hour12: true, hour: "numeric", minute: "2-digit" }
   return (
     <EventItemWrapper>
       {isHappeningNow && (
@@ -195,8 +195,8 @@ const EventItem = observer(({ event }: { event: CalendarEvent }) => {
           <ClockIcon />
         </IconWrapper>
         <DetailText>
-          <strong>{start.toLocaleString(dateFormat)}</strong>–
-          {end.toLocaleString(dateFormat)}
+          <strong>{start.toLocaleString(dateFormat).replace(" ", "")}</strong>–
+          {end.toLocaleString(dateFormat).replace(" ", "")}
           {isHappeningNow && (
             <HumanReadableTimeFromEventStart
               start={start}
@@ -248,7 +248,7 @@ export class Meetings extends React.Component<{
   onNavigateToSettings(): void
 }> {
   @computed
-  get upcomingEvents(): CalendarEvent[] {
+  get eventsThatHaveNotEnded(): CalendarEvent[] {
     return Object.keys(eventsState.relevantEvents)
       .map(key => eventsState.relevantEvents[key])
       .sort(eventComparator)
@@ -256,13 +256,13 @@ export class Meetings extends React.Component<{
   }
 
   render() {
-    const eventsHappeningNow = this.upcomingEvents.filter(ev =>
+    const eventsHappeningNow = this.eventsThatHaveNotEnded.filter(ev =>
       eventIsHappeningNow(ev, timeState.now),
     )
-    const upcomingEvents = this.upcomingEvents.filter(
+    const upcomingEvents = this.eventsThatHaveNotEnded.filter(
       ev => !eventIsHappeningNow(ev, timeState.now),
     )
-    const thereAreEvents = this.upcomingEvents.length > 0
+    const thereAreEvents = this.eventsThatHaveNotEnded.length > 0
     return (
       <Container>
         {!thereAreEvents ? (
@@ -273,7 +273,7 @@ export class Meetings extends React.Component<{
             {eventsHappeningNow.map(event => (
               <EventItem event={event} key={event.id} />
             ))}
-            {upcomingEvents && (
+            {upcomingEvents.length && (
               <>
                 <Subtitle>Upcoming</Subtitle>
                 {upcomingEvents.map(event => (
