@@ -52,7 +52,9 @@ receiveMessages({
     authState.isSigningIn = true
     inBackgroundPage(() =>
       chrome.identity.getAuthToken({ interactive: true }, token => {
-        chrome.runtime.lastError
+        if (!token && chrome.runtime.lastError) {
+          console.error(chrome.runtime.lastError.message)
+        }
         sendMessage("SetIsAuthorized", { isAuthorized: Boolean(token) })
         chrome.identity.getProfileUserInfo(info => {
           sendMessage("SetUserEmail", { userEmail: info.email || null })
@@ -78,7 +80,9 @@ export function init() {
     sendMessage("SetUserEmail", { userEmail: info.email || null })
     if (authState.isUserAnArtsyEmployee) {
       chrome.identity.getAuthToken({ interactive: false }, token => {
-        chrome.runtime.lastError
+        if (!token && chrome.runtime.lastError) {
+          console.error(chrome.runtime.lastError.message)
+        }
 
         if (token) {
           chrome.identity.removeCachedAuthToken({ token })

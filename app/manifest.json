@@ -5,6 +5,7 @@
   "version": "0.0.0",
   "manifest_version": 2,
   "default_locale": "en",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0E322+5QvttOYQX4MUnAPW+eacxb8bDTJE7hfPRrLUERTOFi6TNx5kyFALBm0lGtUWQd3mgcH57W0kxY7zsiDwRHqJAI2qlAAu3bufNRYb4P7olE26dGShVD3U1LGeIoCI9fBhruQrtlxMg1b+Hl6/kOcAcwyx/EALUvhVly5xqABWFRd7cg4GAZFUHUe1tkD+LJQmZ/yQSqgk8UNJS+lNK/oW7OaI17MefBxhenbwKsAzu0cr3Ep2WoiQrqLb+ZPMfTG3sPoQXSeqcdFrL8jHTbMQ51U2qHRfpN50FCl6qNhzGhit0NvWVlJFlGXDHqYFAGXU6B6s+Cnl8d1igvMwIDAQAB",
   "icons": {
     "16": "images/artsy-logo.16x16.png",
     "24": "images/artsy-logo.24x24.png",
@@ -19,7 +20,7 @@
   },
   "permissions": ["identity", "identity.email", "notifications", "tabs"],
   "oauth2": {
-    "client_id": "485053746887-s92c7v4ofimuuvuahaq7v7rokna144ro.apps.googleusercontent.com",
+    "client_id": "485053746887-rtlge89ubqfi9l9k2ohuu03bdj2fmahn.apps.googleusercontent.com",
     "scopes": [
       "https://www.googleapis.com/auth/calendar.readonly",
       "https://www.googleapis.com/auth/drive.readonly"
