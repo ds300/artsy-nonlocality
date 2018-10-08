@@ -4,7 +4,7 @@ import "chromereload/devonly"
 import * as zoom from "./modules/zoom"
 import * as events from "./modules/events"
 import * as auth from "./modules/auth"
-import { sendMessage } from "./protocol"
+import { sendMessage } from "./core/protocol"
 
 import { authState } from "./modules/auth"
 import "./modules/events"

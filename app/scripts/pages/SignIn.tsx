@@ -1,7 +1,7 @@
 import { observer } from "mobx-react"
 import { Container } from "../components/Container"
 import React from "react"
-import { sendMessage } from "../protocol"
+import { sendMessage } from "../core/protocol"
 import { Button } from "../components/Button"
 import { authState } from "../modules/auth"
 import styled from "styled-components"

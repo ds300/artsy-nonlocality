@@ -6,7 +6,7 @@ import { BackArrowIcon } from "../icons/BackArrowIcon"
 import { Title } from "../components/Title"
 import Toggle from "react-toggle"
 import "react-toggle/style.css"
-import { sendMessage } from "../protocol"
+import { sendMessage } from "../core/protocol"
 import { settingsState } from "../modules/settings"
 
 const BackButtonWrapper = styled.div`

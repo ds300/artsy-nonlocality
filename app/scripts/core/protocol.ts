@@ -1,8 +1,8 @@
-import { EventsMessages } from "./modules/events"
-import { ZoomMessages } from "./modules/zoom"
-import { SettingsMessages } from "./modules/settings"
-import { AuthMessages } from "./modules/auth"
-import { ReadyMessages } from "./modules/ready"
+import { EventsMessages } from "../modules/events"
+import { ZoomMessages } from "../modules/zoom"
+import { SettingsMessages } from "../modules/settings"
+import { AuthMessages } from "../modules/auth"
+import { ReadyMessages } from "../modules/ready"
 
 const listeners: Array<(msg: Message) => void> = []
 

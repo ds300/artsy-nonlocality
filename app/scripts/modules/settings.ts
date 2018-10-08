@@ -1,5 +1,5 @@
 import { observable, autorun } from "mobx"
-import { receiveMessages, sendMessage } from "../protocol"
+import { receiveMessages, sendMessage } from "../core/protocol"
 import { inBackgroundPage } from "../utils/inBackgroundPage"
 
 export type SettingsMessages =
