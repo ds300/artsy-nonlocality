@@ -6,7 +6,7 @@ import { OctopusGraphic } from "../components/OctopusGraphic"
 import { CalendarEvent } from "../domain"
 import { parseTime, eventsState } from "../modules/events"
 import { DateTime } from "luxon"
-import { getZoomLink } from "../modules/zoom"
+import { getZoomLinks } from "../modules/zoom"
 import { CalendarIcon } from "../icons/CalendarIcon"
 import { ClockIcon } from "../icons/ClockIcon"
 import { DoorIcon } from "../icons/DoorIcon"
@@ -59,7 +59,7 @@ const EventTitle = styled.div`
 `
 
 const ZoomLink = styled.a`
-  margin-top: 5px;
+  margin-left: 4px;
   display: block;
   color: #3b76ea;
   font-size: 12px;
@@ -68,16 +68,56 @@ const ZoomLink = styled.a`
     text-decoration: underline;
   }
   font-weight: 600;
+  flex: 0 0 auto;
 `
 
 const Row = styled.div`
   display: flex;
-  padding-bottom: 6px;
-  margin-bottom: 1px;
+  margin-bottom: 6px;
+  align-items: baseline;
+  ${({ active }: { active?: boolean }) =>
+    active &&
+    css`
+      padding: 8px 6px;
+      border: 1px solid #dadada;
+      margin-bottom: 0;
+      :hover {
+        cursor: pointer;
+        border: 1px solid #7d7d7d;
+        a {
+          text-decoration: underline;
+        }
+        position: relative;
+        z-index: 1;
+        + div {
+          z-index: 0;
+        }
+      }
+      :first-child {
+        border-top-right-radius: 3px;
+        border-top-left-radius: 3px;
+      }
+      :not(:last-child) {
+        margin-bottom: -1px;
+      }
+      :last-child {
+        border-bottom-right-radius: 3px;
+        border-bottom-left-radius: 3px;
+      }
+    `};
+`
+
+const RoomsWrapper = styled.div`
+  ${({ active }: { active: boolean }) =>
+    active &&
+    css`
+      margin: 0 -6px;
+    `};
 `
 
 const EventTitleRow = styled(Row)`
   padding: 0;
+  margin: 0;
   cursor: pointer;
   svg {
     opacity: 0.79;
@@ -95,8 +135,17 @@ const EventTitleRow = styled(Row)`
 const IconWrapper = styled.div`
   flex: 0 0 18px;
   display: flex;
-  justify-content: center;
   margin-right: 10px;
+  position: relative;
+  svg {
+    position: absolute;
+    left: 50%;
+    /* this wrapper is 0px high, and aligned to base line of text */
+    /* so offset icon a bit below base line and let individual icons */
+    /* tweak exact offset according to their height */
+    bottom: -2px;
+    transform: translateX(-50%);
+  }
 `
 
 const Pill = styled.span`
@@ -108,6 +157,7 @@ const Pill = styled.span`
   font-size: 10px;
   text-transform: uppercase;
   font-weight: 700;
+  margin-bottom: 5px;
 `
 
 const HumanReadableTimeFromEventStart = ({
@@ -138,11 +188,21 @@ const Subtitle = styled.div`
 `
 
 const DetailText = styled.div`
+  flex: 1;
   font-weight: 100;
   color: #212121;
   strong {
     color: #000;
   }
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  ${({ active }: { active?: boolean }) =>
+    active &&
+    css`
+      color: black;
+      font-weight: 400;
+    `};
 `
 
 const eventIsHappeningNow = (event: CalendarEvent, now: DateTime) =>
@@ -152,41 +212,20 @@ const EventItem = observer(({ event }: { event: CalendarEvent }) => {
   const start = parseTime(event.start!)
   const end = parseTime(event.end!)
   const isHappeningNow = start < timeState.now && end > timeState.now
-  const zoomLink = getZoomLink(event)
   const dateFormat: Intl.DateTimeFormatOptions = settingsState.use24hrClock
     ? DateTime.TIME_24_SIMPLE
     : { hour12: true, hour: "numeric", minute: "2-digit" }
+
+  const zoomLinks = getZoomLinks(event)
+
   return (
     <EventItemWrapper>
-      {isHappeningNow && (
-        <Row
-          style={{
-            justifyContent: "space-between",
-            alignItems: "baseline",
-          }}
-        >
-          <Pill>in progress</Pill>
-          <ZoomLink
-            href={getZoomLink(event)}
-            onClick={() => {
-              chrome.tabs.create({
-                url: zoomLink,
-              })
-            }}
-          >
-            Join now
-            <ExternalLinkIcon
-              style={{ position: "relative", left: "4px", top: "1px" }}
-              fill="#3b76ea"
-            />
-          </ZoomLink>
-        </Row>
-      )}
+      {isHappeningNow && <Pill>in progress</Pill>}
       <EventTitleRow
         onClick={() => chrome.tabs.create({ url: event.htmlLink })}
       >
         <IconWrapper>
-          <CalendarIcon style={{ position: "relative", top: "3px" }} />
+          <CalendarIcon />
         </IconWrapper>
         <EventTitle>{event.summary || "Untitled event"}</EventTitle>
       </EventTitleRow>
@@ -195,8 +234,10 @@ const EventItem = observer(({ event }: { event: CalendarEvent }) => {
           <ClockIcon />
         </IconWrapper>
         <DetailText>
-          <strong>{start.toLocaleString(dateFormat).replace(" ", "")}</strong>–
-          {end.toLocaleString(dateFormat).replace(" ", "")}
+          <strong>
+            {start.toLocaleString(dateFormat).replace(/ |am|pm/g, "")}
+          </strong>
+          –{end.toLocaleString(dateFormat).replace(/ |am|pm/g, "")}
           {isHappeningNow && (
             <HumanReadableTimeFromEventStart
               start={start}
@@ -206,12 +247,42 @@ const EventItem = observer(({ event }: { event: CalendarEvent }) => {
           )}
         </DetailText>
       </Row>
-      <Row>
-        <IconWrapper>
-          <DoorIcon />
-        </IconWrapper>
-        <DetailText>{event.location || getZoomLink(event)}</DetailText>
-      </Row>
+      <RoomsWrapper active={isHappeningNow}>
+        {zoomLinks.map(zoomLink => (
+          <Row
+            active={isHappeningNow}
+            onClick={
+              isHappeningNow
+                ? () => {
+                    chrome.tabs.create({
+                      url: zoomLink.href,
+                    })
+                  }
+                : undefined
+            }
+          >
+            <IconWrapper>
+              <DoorIcon style={{ bottom: "-5px" }} />
+            </IconWrapper>
+            <DetailText active={isHappeningNow}>
+              {zoomLink.location || zoomLink.href.replace(/https?:\/\//, "")}
+            </DetailText>
+            {isHappeningNow && (
+              <ZoomLink>
+                Join now
+                <ExternalLinkIcon
+                  style={{
+                    position: "relative",
+                    marginLeft: "4px",
+                    top: "1px",
+                  }}
+                  fill="#3b76ea"
+                />
+              </ZoomLink>
+            )}
+          </Row>
+        ))}
+      </RoomsWrapper>
     </EventItemWrapper>
   )
 })

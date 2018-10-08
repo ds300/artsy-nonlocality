@@ -47,8 +47,34 @@ export const init = () =>
       sendMessage("ReceivedKnownRooms", { rooms })
     })
 
-export const getZoomLink = (event: CalendarEvent): string | undefined => {
-  const explicitLinks = Array.from(
+type ZoomLinks = Array<{ location?: string; href: string }>
+
+export const getZoomLinks = (
+  event: CalendarEvent,
+): ZoomLinks => {
+  const location = event.location
+  let locationMatches: ZoomLinks = []
+  if (location) {
+    locationMatches = (Object.keys(zoomState.knownRooms)
+      .map(key => {
+        const index = location.indexOf(key)
+        if (index > -1) {
+          return {
+            index,
+            key,
+          }
+        }
+        return null
+      })
+      .filter(Boolean) as Array<{ index: number; key: string }>)
+      .sort((a, b) => Number(a && b && a.index - b.index))
+      .map(({ key }) => ({
+        location: key,
+        href: zoomState.knownRooms[key],
+      }))
+  }
+
+  const descriptionMatches: ZoomLinks = Array.from(
     getUrls([event.location, event.description].join("\n"), {
       extractFromQueryString: true,
     }),
@@ -56,20 +82,12 @@ export const getZoomLink = (event: CalendarEvent): string | undefined => {
     .map(url.parse)
     .filter(url => url.hostname === "zoom.us")
     .filter(url => url.pathname && url.pathname.match(/^\/(j|my)\/\w+$/))
+    .map(url => url.href as string)
+    .filter(href => !locationMatches.some(loc => loc.href === href))
+    .map(href => ({ href }))
 
-  if (
-    explicitLinks.length === 1 ||
-    new Set(explicitLinks.map(url => url.pathname)).size === 1
-  ) {
-    return explicitLinks[0].href
-  }
-
-  const link = event.location && zoomState.knownRooms[event.location.trim()]
-  if (link) {
-    return link
-  }
-
-  return
+  return locationMatches.concat(descriptionMatches)
 }
 
-export const isZoomable = (event: CalendarEvent) => Boolean(getZoomLink(event))
+export const isZoomable = (event: CalendarEvent) =>
+  Boolean(getZoomLinks(event).length)
