@@ -160,7 +160,7 @@ export async function init() {
         })
       } else {
         chrome.tabs.create({
-          url: "pages/popup.html",
+          url: "pages/roomSelect.html?id=" + ev.id,
         })
       }
     }

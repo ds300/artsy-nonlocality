@@ -160,7 +160,7 @@ const Pill = styled.span`
   margin-bottom: 5px;
 `
 
-const HumanReadableTimeFromEventStart = ({
+export const HumanReadableTimeFromEventStart = ({
   start,
   now,
   future,
