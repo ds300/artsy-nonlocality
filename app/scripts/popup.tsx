@@ -14,6 +14,12 @@ import "./modules/zoom"
 import { observable } from "mobx"
 import { readyState } from "./modules/ready"
 
+import * as Sentry from "@sentry/browser"
+
+Sentry.init({
+  dsn: "https://c9a3e3d70c4b414088af3aee6e66d81b@sentry.io/1277918",
+})
+
 sendMessage("Sync")
 
 @observer

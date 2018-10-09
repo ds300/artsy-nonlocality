@@ -22,6 +22,12 @@ import { HumanReadableTimeFromEventStart } from "./pages/Meetings"
 import { DoorIcon } from "./icons/DoorIcon"
 import { ExternalLinkIcon } from "./icons/ExternalLinkIcon"
 
+import * as Sentry from "@sentry/browser"
+
+Sentry.init({
+  dsn: "https://c9a3e3d70c4b414088af3aee6e66d81b@sentry.io/1277918",
+})
+
 injectGlobal`
   body, html, #main {
     height: 100%;
@@ -166,6 +172,7 @@ const RoomSelect = observer(({ id }: { id: string }) => {
         <div>
           {zoomLinks.map(zoomLink => (
             <Row
+              key={zoomLink.href}
               active={isHappeningNow}
               onClick={
                 isHappeningNow

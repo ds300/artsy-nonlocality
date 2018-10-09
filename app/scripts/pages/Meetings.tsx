@@ -250,6 +250,7 @@ const EventItem = observer(({ event }: { event: CalendarEvent }) => {
       <RoomsWrapper active={isHappeningNow}>
         {zoomLinks.map(zoomLink => (
           <Row
+            key={zoomLink.href}
             active={isHappeningNow}
             onClick={
               isHappeningNow

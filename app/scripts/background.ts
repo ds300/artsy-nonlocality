@@ -14,6 +14,12 @@ import "./modules/time"
 import "./modules/zoom"
 import { autorun } from "mobx"
 
+import * as Sentry from "@sentry/browser"
+
+Sentry.init({
+  dsn: "https://c9a3e3d70c4b414088af3aee6e66d81b@sentry.io/1277918",
+})
+
 function init() {
   zoom
     .init()
