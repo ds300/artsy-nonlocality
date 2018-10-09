@@ -1,4 +1,4 @@
-# Artsy Employee Meetings
+# Artsy Nonlocality
 
 As a remote Artsy employee, I join a lot of Zoom meetings. Joining a meeting is a two-click process at best, and it takes about 10 seconds at the worst of times. This extension makes it a one-click no-hassle, never-even-need-to-think-about-it experience.
 
